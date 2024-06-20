@@ -39,6 +39,7 @@ citiesName = "owitz"
 HMap.remove_layers_by_name(["OpenStreetMap", citiesName, countriesName])
 
 folder = "C:/github/examocking/"
+outputFolder = f"{folder}/output/"
 
 
 # load open street map
@@ -97,4 +98,49 @@ HMap.add_layer(germanyLayer)
 #=============================================
 owitzLayer = HVectorLayer.open(folder + "villages.gpkg", citiesName)
 HMap.add_layer(owitzLayer)
+#=============================================
+
+#=============================================
+#STYLING
+#=============================================
+ranges = [
+    [0, 50],
+    [51, 100],
+    [101, 200],
+    [201, 300],
+    [301, 400],
+    [401, 500],
+    [501, float('inf')]
+]
+styles = [
+    HFill('yellow') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('green') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('blue') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('orange') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('red') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('brown') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('black') + HMarker("round", 2) + HStroke("black", 0.3),
+]
+
+owitzLayer.set_graduated_style("elevation", ranges, styles)
+germanyLayer.set_style(HStroke("black", 1) + HFill("0,0,0,0"))
+#=============================================
+
+
+
+#=============================================
+#CREATING THE LAYOUT
+#=============================================
+printer = HPrinter(iface)
+mapProperties = {
+    "x": 5,
+    "y": 25,
+    "width": 285,
+    "height": 180,
+    "frame": True,
+    "extent": germanyLayer.bbox()
+}
+printer.add_map(**mapProperties)
+
+printer.dump_to_pdf(outputFolder+"OWITZ.pdf")
 #=============================================
