@@ -142,5 +142,23 @@ mapProperties = {
 }
 printer.add_map(**mapProperties)
 
+legendProperties = {
+        "x": 5,
+        "y": 129,
+        "width": 75,
+        "height": 45,
+        "frame": True
+    }
+printer.add_legend(**legendProperties)
+    
+labelProperties = {
+        "x": 75,
+        "y": 10,
+        "text": "Distribution of German Cities ending on -ow/-itz",
+        "font_size": 20,
+        "bold": True
+    }
+printer.add_label(**labelProperties)
+
 printer.dump_to_pdf(outputFolder+"OWITZ.pdf")
 #=============================================
