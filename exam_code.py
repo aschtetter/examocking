@@ -131,6 +131,7 @@ germanyLayer.set_style(HStroke("black", 1) + HFill("0,0,0,0"))
 #=============================================
 #CREATING THE LAYOUT
 #=============================================
+
 printer = HPrinter(iface)
 mapProperties = {
     "x": 5,
@@ -144,7 +145,7 @@ printer.add_map(**mapProperties)
 
 legendProperties = {
         "x": 5,
-        "y": 129,
+        "y": 130,
         "width": 75,
         "height": 45,
         "frame": True
@@ -154,11 +155,29 @@ printer.add_legend(**legendProperties)
 labelProperties = {
         "x": 75,
         "y": 10,
-        "text": "Distribution of German Cities ending on -ow/-itz",
+        "text": "Distribution of German Cities ending in -ow/-itz",
         "font_size": 20,
         "bold": True
     }
 printer.add_label(**labelProperties)
+
+labelPropertiesSubtitle = {
+    "x": 130,
+    "y": 18,
+    "text": "Based on elevation",
+    "font_size": 14,
+    "italic": True
+}
+printer.add_label(**labelPropertiesSubtitle)
+
+scalebarProperties = {
+    "x": 210,
+    "y": 190,
+    "units": "km",
+    "style": "Single Box", # or 'Line Ticks Up'
+    "font_size": 14
+}
+printer.add_scalebar(**scalebarProperties)
 
 printer.dump_to_pdf(outputFolder+"OWITZ.pdf")
 #=============================================
