@@ -1,3 +1,30 @@
+
+#=============================================
+#CLEANUP AND CODE PREPERATION
+#=============================================
+
+from pyqgis_scripting_ext.core import *
+
+countriesName = "ne_50m_admin_0_countries"
+citiesName = "owitz"
+HMap.remove_layers_by_name(["OpenStreetMap", citiesName, countriesName])
+
+#folder = "C:/github/examocking/" #Anna
+folder = "C:/Users/Lorenz/Documents/GitHub/exam/examocking/" #Lorenz
+outputFolder = f"{folder}/output/"
+
+#CRS helper
+crsHelper = HCrs()
+crsHelper.from_srid(4326)
+crsHelper.to_srid(32632)
+
+# load open street map
+osm = HMap.get_osm_layer()
+HMap.add_layer(osm)
+#=============================================
+
+
+
 # # =============================================
 # # IMPORT OF THE DATA
 # # =============================================
@@ -23,29 +50,9 @@
 
 # r=requests.get(url)
 # data = r.json()
-#print(data)
+# #print(data)
 # #=============================================
 
-
-
-#=============================================
-#CLEANUP AND CODE PREPERATION
-#=============================================
-
-from pyqgis_scripting_ext.core import *
-
-countriesName = "ne_50m_admin_0_countries"
-citiesName = "owitz"
-HMap.remove_layers_by_name(["OpenStreetMap", citiesName, countriesName])
-
-folder = "C:/github/examocking/"
-outputFolder = f"{folder}/output/"
-
-
-# load open street map
-osm = HMap.get_osm_layer()
-HMap.add_layer(osm)
-#=============================================
 
 
 # #=============================================
@@ -58,7 +65,7 @@ HMap.add_layer(osm)
 #     "lon": "Float"
 # }
 
-# villageLayer = HVectorLayer.new(citiesName, "Point", "EPSG:4326", fields)
+# villageLayer = HVectorLayer.new(citiesName, "Point", "EPSG:32632", fields)
 
 # for result in data['results']['bindings']:
 
@@ -70,7 +77,11 @@ HMap.add_layer(osm)
 #     lat = float(coord_parts[1])
 #     lon = float(coord_parts[0])
     
-#     villageLayer.add_feature(HPoint(lon, lat), [city_name, elevation, lat, lon])
+#     point = HPoint(lon, lat)
+#     point = crsHelper.transform(point)
+    
+    
+#     villageLayer.add_feature(point, [city_name, elevation, lat, lon])
     
 
 # path = folder + "villages.gpkg"
@@ -90,6 +101,14 @@ geopackagePath = folder + "natural_earth_vector.gpkg"
 germanyLayer = HVectorLayer.open(geopackagePath, countriesName)
 germanyLayer.subset_filter("ADMIN = 'Germany'")
 HMap.add_layer(germanyLayer)
+
+
+#GerGeo definition needed later for bbox in the map layout
+germany = germanyLayer.features()
+GerGeo = germany[0].geometry
+GerGeo = crsHelper.transform(GerGeo)
+
+
 #=============================================
 
 
@@ -139,7 +158,7 @@ mapProperties = {
     "width": 285,
     "height": 180,
     "frame": True,
-    "extent": germanyLayer.bbox()
+    "extent": GerGeo.bbox() # germayLayer seems not to work after the transformation
 }
 printer.add_map(**mapProperties)
 
