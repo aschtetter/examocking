@@ -106,20 +106,20 @@ HMap.add_layer(owitzLayer)
 ranges = [
     [0, 50],
     [51, 100],
-    [101, 200],
-    [201, 300],
-    [301, 400],
-    [401, 500],
-    [501, float('inf')]
+    [101, 500],
+    [501, 1000],
+    [1001, 2000],
+    [2001, 3000],
+    [3001, float('inf')]
 ]
 styles = [
-    HFill('yellow') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('green') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('blue') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('orange') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('red') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('brown') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('black') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#762a83') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#af8dc3') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#e7d4e8') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#f7f7f7') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#d9f0d3') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#7fbf7b') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#1b7837') + HMarker("round", 2) + HStroke("black", 0.3),
 ]
 
 owitzLayer.set_graduated_style("elevation", ranges, styles)
