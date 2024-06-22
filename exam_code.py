@@ -72,7 +72,7 @@ HMap.add_layer(osm)
 #     city_name = result['itemLabel']['value']
 #     elevation = result['elev']['value']
 #     coordinates = result['coord']['value']
-#     coord_parts = coordinates.split('(')[1].split(')')[0].split()
+#     coord_parts = coordinates.split('(')[1].split(')')[0].split() # Point(42.21 25.64)
     
 #     lat = float(coord_parts[1])
 #     lon = float(coord_parts[0])
@@ -80,9 +80,8 @@ HMap.add_layer(osm)
 #     point = HPoint(lon, lat)
 #     point = crsHelper.transform(point)
     
-    
 #     villageLayer.add_feature(point, [city_name, elevation, lat, lon])
-    
+
 
 # path = folder + "villages.gpkg"
 # HopeNotError = villageLayer.dump_to_gpkg(path, overwrite = True)
@@ -107,13 +106,13 @@ HMap.add_layer(germanyLayer)
 germany = germanyLayer.features()
 GerGeo = germany[0].geometry
 GerGeo = crsHelper.transform(GerGeo)
+GerGeo = GerGeo.buffer(10000) #map units = 1 m -> Buffer = 10 km
+
+#=============================================
 
 
 #=============================================
-
-
-#=============================================
-#LOADING TOF THE OWITZ LAYER
+#LOADING OF THE OWITZ LAYER
 #=============================================
 owitzLayer = HVectorLayer.open(folder + "villages.gpkg", citiesName)
 HMap.add_layer(owitzLayer)
@@ -132,17 +131,17 @@ ranges = [
     [3001, float('inf')]
 ]
 styles = [
-    HFill('#762a83') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('#af8dc3') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('#e7d4e8') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('#f7f7f7') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('#d9f0d3') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('#7fbf7b') + HMarker("round", 2) + HStroke("black", 0.3),
-    HFill('#1b7837') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#edf8fb') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#bfd3e6') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#9ebcda') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#8c96c6') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#8c6bb1') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#88419d') + HMarker("round", 2) + HStroke("black", 0.3),
+    HFill('#6e016b') + HMarker("round", 2) + HStroke("black", 0.3),
 ]
 
 owitzLayer.set_graduated_style("elevation", ranges, styles)
-germanyLayer.set_style(HStroke("black", 1) + HFill("0,0,0,0"))
+germanyLayer.set_style(HStroke("black", 1) + HFill("0,0,0,35"))
 #=============================================
 
 
@@ -163,8 +162,8 @@ mapProperties = {
 printer.add_map(**mapProperties)
 
 legendProperties = {
-        "x": 5,
-        "y": 130,
+        "x": 10,
+        "y": 120,
         "width": 75,
         "height": 45,
         "frame": True
@@ -174,7 +173,7 @@ printer.add_legend(**legendProperties)
 labelProperties = {
         "x": 75,
         "y": 10,
-        "text": "Distribution of German Cities ending in -ow/-itz",
+        "text": "Distribution of German Cities ending in '-ow/-itz'",
         "font_size": 20,
         "bold": True
     }
@@ -190,8 +189,8 @@ labelPropertiesSubtitle = {
 printer.add_label(**labelPropertiesSubtitle)
 
 scalebarProperties = {
-    "x": 210,
-    "y": 190,
+    "x": 220,
+    "y": 185,
     "units": "km",
     "style": "Single Box", # or 'Line Ticks Up'
     "font_size": 14
