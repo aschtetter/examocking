@@ -7,6 +7,14 @@ from pyqgis_scripting_ext.core import *
 import json
 import os.path
 
+projection = 32632
+
+projectObj = QgsProject.instance()
+projectRoot = projectObj.layerTreeRoot()
+projectCrs = QgsCoordinateReferenceSystem.fromEpsgId(projection)
+projectObj.setCrs(projectCrs)
+
+
 
 countriesName = "ne_50m_admin_0_countries"
 citiesName = "owitz"
@@ -19,11 +27,13 @@ cacheFolder = f"{folder}cache/"
 #CRS helper
 crsHelper = HCrs()
 crsHelper.from_srid(4326)
-crsHelper.to_srid(32632)
+crsHelper.to_srid(projection)
 
 # load open street map
 osm = HMap.get_osm_layer()
 HMap.add_layer(osm)
+
+
 #=============================================
 
 
@@ -78,7 +88,7 @@ fields = {
     "lon": "Float"
 }
 
-villageLayer = HVectorLayer.new(citiesName, "Point", "EPSG:32632", fields)
+villageLayer = HVectorLayer.new(citiesName, "Point", f"EPSG:{projection}", fields)
 
 for result in data['results']['bindings']:
 
@@ -130,6 +140,10 @@ GerGeo = GerGeo.buffer(10000) #map units = 1 m -> Buffer = 10 km
 owitzLayer = HVectorLayer.open(folder + "villages.gpkg", citiesName)
 HMap.add_layer(owitzLayer)
 #=============================================
+
+
+
+
 
 #=============================================
 #STYLING
