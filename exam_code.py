@@ -4,6 +4,9 @@
 #=============================================
 
 from pyqgis_scripting_ext.core import *
+import json
+import os.path
+
 
 countriesName = "ne_50m_admin_0_countries"
 citiesName = "owitz"
@@ -11,8 +14,8 @@ HMap.remove_layers_by_name(["OpenStreetMap", citiesName, countriesName])
 
 #folder = "C:/github/examocking/" #Anna
 folder = "C:/Users/Lorenz/Documents/GitHub/exam/examocking/" #Lorenz
-outputFolder = f"{folder}/output/"
-
+outputFolder = f"{folder}output/"
+cacheFolder = f"{folder}cache/"
 #CRS helper
 crsHelper = HCrs()
 crsHelper.from_srid(4326)
@@ -24,70 +27,80 @@ HMap.add_layer(osm)
 #=============================================
 
 
+# =============================================
+# IMPORT OF THE DATA
+# =============================================
+import requests
+import urllib.parse
 
-# # =============================================
-# # IMPORT OF THE DATA
-# # =============================================
-# import requests
-# import urllib.parse
-
-# endpointUrl = "https://query.wikidata.org/sparql?query=";
-# query = """
-# SELECT ?item ?itemLabel ?elev ?coord
-# WHERE
-# {
-#   ?item wdt:P31/wdt:P279* wd:Q486972;
-#   wdt:P17 wd:Q183;
-#   rdfs:label ?itemLabel;
-#   wdt:P2044 ?elev;
-#   wdt:P625 ?coord;
-#   FILTER (lang(?itemLabel) = "de") .
-#   FILTER regex (?itemLabel, "(ow|itz)$").
-# }
-# """
-# encoded_query = urllib.parse.quote(query)
-# url = f"{endpointUrl}{encoded_query}&format=json"
-
-# r=requests.get(url)
-# data = r.json()
-# #print(data)
-# #=============================================
+if os.path.exists(cacheFolder + "cache.json") is False:
+    endpointUrl = "https://query.wikidata.org/sparql?query=";
+    query = """
+    SELECT ?item ?itemLabel ?elev ?coord
+    WHERE
+    {
+      ?item wdt:P31/wdt:P279* wd:Q486972;
+      wdt:P17 wd:Q183;
+      rdfs:label ?itemLabel;
+      wdt:P2044 ?elev;
+      wdt:P625 ?coord;
+      FILTER (lang(?itemLabel) = "de") .
+      FILTER regex (?itemLabel, "(ow|itz)$").
+    }
+    """
+    encoded_query = urllib.parse.quote(query)
+    url = f"{endpointUrl}{encoded_query}&format=json"
 
 
+    r=requests.get(url)
+    data = r.json()
 
-# #=============================================
-# #CREATION OF THE GEOPACKAGE
-# #=============================================
-# fields = {
-#     "name": "String",
-#     "elevation": "Integer",
-#     "lat": "Float",
-#     "lon": "Float"
-# }
+    with open(cacheFolder + "cache.json", 'w') as jsonFile:
+        json.dump(data, jsonFile)
+        
 
-# villageLayer = HVectorLayer.new(citiesName, "Point", "EPSG:32632", fields)
+with open(cacheFolder + "cache.json", 'r') as jsonFile:
+        data = json.load(jsonFile)
 
-# for result in data['results']['bindings']:
 
-#     city_name = result['itemLabel']['value']
-#     elevation = result['elev']['value']
-#     coordinates = result['coord']['value']
-#     coord_parts = coordinates.split('(')[1].split(')')[0].split() # Point(42.21 25.64)
+#print(data)
+#=============================================
+
+
+
+#=============================================
+#CREATION OF THE GEOPACKAGE
+#=============================================
+fields = {
+    "name": "String",
+    "elevation": "Integer",
+    "lat": "Float",
+    "lon": "Float"
+}
+
+villageLayer = HVectorLayer.new(citiesName, "Point", "EPSG:32632", fields)
+
+for result in data['results']['bindings']:
+
+    city_name = result['itemLabel']['value']
+    elevation = result['elev']['value']
+    coordinates = result['coord']['value']
+    coord_parts = coordinates.split('(')[1].split(')')[0].split() # Point(42.21 25.64)
     
-#     lat = float(coord_parts[1])
-#     lon = float(coord_parts[0])
+    lat = float(coord_parts[1])
+    lon = float(coord_parts[0])
     
-#     point = HPoint(lon, lat)
-#     point = crsHelper.transform(point)
+    point = HPoint(lon, lat)
+    point = crsHelper.transform(point)
     
-#     villageLayer.add_feature(point, [city_name, elevation, lat, lon])
+    villageLayer.add_feature(point, [city_name, elevation, lat, lon])
 
 
-# path = folder + "villages.gpkg"
-# HopeNotError = villageLayer.dump_to_gpkg(path, overwrite = True)
-# if HopeNotError:
-#     print(HopeNotError)
-# #=============================================
+path = folder + "villages.gpkg"
+HopeNotError = villageLayer.dump_to_gpkg(path, overwrite = True)
+if HopeNotError:
+    print(HopeNotError)
+#=============================================
 
 
 #=============================================
