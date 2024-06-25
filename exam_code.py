@@ -130,6 +130,9 @@ ranges = [
     [2001, 3000],
     [3001, float('inf')]
 ]
+
+
+
 styles = [
     HFill('#edf8fb') + HMarker("round", 2) + HStroke("black", 0.3),
     HFill('#bfd3e6') + HMarker("round", 2) + HStroke("black", 0.3),
@@ -140,7 +143,19 @@ styles = [
     HFill('#6e016b') + HMarker("round", 2) + HStroke("black", 0.3),
 ]
 
-owitzLayer.set_graduated_style("elevation", ranges, styles)
+CitylabelProperties = {
+    "font": "Arial",
+    "color": "black",
+    "size": 6,
+    "field": "concat(name ,': ',elevation, ' m')",
+    "xoffset": 0,
+    "yoffset": -10
+}
+
+labelStyle = HLabel(**CitylabelProperties) +HHalo("white",1)
+owitzLayer.set_graduated_style("elevation", ranges, styles, labelStyle)
+
+
 germanyLayer.set_style(HStroke("black", 1) + HFill("0,0,0,35"))
 #=============================================
 
